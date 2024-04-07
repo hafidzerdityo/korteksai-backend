@@ -1,0 +1,32 @@
+version: "3"
+
+services:
+  korteksaiws:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: korteksai:latest
+    container_name: korteksai
+    ports:
+      - "8004:8004"
+    volumes:
+      - ./app:/code
+    environment:
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      - postgres_korteksai
+
+  postgres_korteksai:
+    image: postgres:latest
+    container_name: pg_korteksai
+    restart: always
+    env_file:
+      - ./app/config.env
+    ports:
+      - "8003:8003"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    command: postgres -c listen_addresses='*' -c port=8003
+
+volumes:
+  postgres_data:
