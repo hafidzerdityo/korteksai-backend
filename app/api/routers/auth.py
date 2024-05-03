@@ -33,6 +33,8 @@ async def login_for_access_token(form_data: auth_utils.OAuth2PasswordRequestForm
 @router.get('/protected/admin', tags=["Authorization"], status_code=status.HTTP_200_OK, response_model=auth_schemas.ResponseProtected)
 async def admin_authorization(decoded_token: dict[str,any] = Depends(auth_utils.get_current_user)):
     try:
+        if decoded_token.get('error'):
+            raise Exception(decoded_token.get('msg'))
         if decoded_token.get('role') != 'admin':
             raise Exception('Unauthorized')
         return auth_schemas.ResponseProtected(
@@ -51,6 +53,8 @@ async def admin_authorization(decoded_token: dict[str,any] = Depends(auth_utils.
 @router.get('/protected/view', tags=["Authorization"], status_code=status.HTTP_200_OK, response_model=auth_schemas.ResponseProtected)
 async def view_authorization(decoded_token: dict[str,any] = Depends(auth_utils.get_current_user)):
     try:
+        if decoded_token.get('error'):
+            raise Exception(decoded_token.get('msg'))
         if decoded_token.get('role') != 'view':
             raise Exception('Unauthorized')
         return auth_schemas.ResponseProtected(
