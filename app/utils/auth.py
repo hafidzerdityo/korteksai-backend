@@ -57,4 +57,4 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> dict[str,any]
         return payload
     except JWTError as e:
         logger.error(str(e)) 
-        return {'error': True, 'msg': str(e)}
+        return {'error': True, 'msg': f"jwt decode error, reason: {str(e)}"}

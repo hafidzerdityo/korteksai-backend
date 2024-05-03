@@ -19,12 +19,7 @@ transaction_service = trx_service.init_transaction_user(db_config.database,db_mo
 async def update_credit(request_payload: trx_schemas.RequestTopup, decoded_token: dict[str,any] = Depends(auth_utils.get_current_user)) -> trx_schemas.ResponseTopup:
     try:
         if decoded_token.get('error'):
-            return JSONResponse(
-            status_code= status.HTTP_401_UNAUTHORIZED,
-            content={"resp_msg": decoded_token.get('msg'),
-                     "resp_data":  None
-                     },
-        )
+            raise Exception(decoded_token.get('msg'))
         request_payload_dict = dict(request_payload)
         request_payload_dict["username"] = decoded_token.get("username")
         logger.info(request_payload_dict)

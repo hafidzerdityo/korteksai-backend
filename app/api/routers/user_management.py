@@ -45,6 +45,8 @@ async def create_user(request_payload: um_schemas.RequestDaftar) -> um_schemas.R
 async def get_user(decoded_token: dict[str,any] = Depends(auth_utils.get_current_user)) -> um_schemas.ResponseUser:
     try:
         logger.info(decoded_token)
+        if decoded_token.get('error'):
+            raise Exception(decoded_token.get('msg'))
         data_fetch_success = await user_service.get_user(decoded_token)
         data_fetch_success = um_schemas.ResponseUserItem(**data_fetch_success)
         response = {
@@ -67,6 +69,8 @@ async def get_user(decoded_token: dict[str,any] = Depends(auth_utils.get_current
 async def get_user(decoded_token: dict[str,any] = Depends(auth_utils.get_current_user)) -> um_schemas.ResponseUsers:
     try:
         logger.info(decoded_token)
+        if decoded_token.get('error'):
+            raise Exception(decoded_token.get('msg'))
         data_fetch_success = await user_service.select_users(decoded_token)
         data_fetch_success = [um_schemas.ResponseUserItem(**i) for i in data_fetch_success]
         return um_schemas.ResponseUsers(
