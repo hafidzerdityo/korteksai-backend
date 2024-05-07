@@ -11,10 +11,11 @@ class UserService:
 
     async def post_user(self, req_payload: dict[str,any]) -> dict[str,any]:
         async with self.database.transaction():
-            user_exist = await self.repo.get_user(req_payload.get('username'))
-            if user_exist:
-                raise DataExist("Username is already exist")
-            
+            user_data = await self.repo.get_user_by_user_email(req_payload.get('email'), req_payload.get('username'))
+            if req_payload['username'] == user_data['username']:
+                raise DataExist("username is already exist")
+            if req_payload['email'] == user_data['email']:
+                raise DataExist("email is already exist")
             get_rekening = await self.repo.create_user(req_payload=req_payload)
         return get_rekening
 
@@ -22,7 +23,7 @@ class UserService:
         async with self.database.transaction():
             user_exist = await self.repo.get_user(decoded_token.get('username'))
             if not user_exist:
-                raise Exception("Username Does Not Exist")
+                raise Exception("username Does Not Exist")
         return user_exist   
     
     async def select_users(self, decoded_token: dict[str,any]) -> list[dict[str,any]]:
@@ -31,7 +32,7 @@ class UserService:
                 raise Exception("Unauthorized role")
             list_user = await self.repo.select_users()
             if not list_user:
-                raise Exception("List of Users is not exist")
+                raise Exception("list of users is not exist")
         return list_user   
 
 def init_service_user(database, db_model, logger):

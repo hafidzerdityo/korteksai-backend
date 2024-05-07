@@ -1,6 +1,6 @@
 import utils.crud as crud_utils
 import utils.auth as auth_utils
-from sqlalchemy import select, insert
+from sqlalchemy import select, insert, or_
 
 
 class RepositoryUser:
@@ -22,46 +22,26 @@ class RepositoryUser:
                 updated_at = None,
                 is_deleted = False
             )
-            await self.database(query)
+            await self.database.execute(query)
             return {
                 'success' : True
             }
-               
-            
+              
         except Exception as e:
-            remark = 'Database Crud Error'
+            remark = f'Database Crud Error, reason: {e}'
             self.logger.error(str(e))
             raise Exception(remark)
 
 
-    # # RAW Query Example
-    # async def check_user(self, username: str):
-    #     try:
-    #         query = f"""
-    #             SELECT username, nama, role, divisi, jabatan, created_at, is_deleted
-    #             FROM "user"
-    #             WHERE username = :username
-    #         """
-    #         user_exist = await self.database.fetch_one(query=query, values={"username": username})
-            
-    #         if user_exist:
-    #             user_exist = dict(user_exist)
-    #             user_exist['created_at'] = user_exist['created_at'].strftime("%Y-%m-%d %H:%M:%S.%f")
-    #         else:
-    #             user_exist = {}
-    #         return user_exist
-    #     except Exception as e:
-    #         remark = 'Database Crud Error'
-    #         self.logger.error(str(e))
-    #         raise Exception(remark)
-        
-    async def get_user(self, username: str) -> dict[str,any]:
+    # RAW Query Example
+    async def get_user_raw(self, username: str):
         try:
-            query = select(self.db_model.Account).where(
-                (self.db_model.Account.c.username == username)
-            )
-            user_exist = await self.database.fetch_one(query)
-            
+            query = f"""
+                SELECT username, nama, role, divisi, jabatan, created_at, is_deleted
+                FROM "user"
+                WHERE username = :username
+            """
+            user_exist = await self.database.fetch_one(query=query, values={"username": username})
             if user_exist:
                 user_exist = dict(user_exist)
                 user_exist['created_at'] = user_exist['created_at'].strftime("%Y-%m-%d %H:%M:%S.%f")
@@ -70,6 +50,40 @@ class RepositoryUser:
             return user_exist
         except Exception as e:
             remark = 'Database Crud Error'
+            self.logger.error(str(e))
+            raise Exception(remark)
+        
+    async def get_user(self, username: str) -> dict[str,any]:
+        try:
+            query = select(self.db_model.Account).where(
+                (self.db_model.Account.c.username == username)
+            )
+            user_data = await self.database.fetch_one(query)
+            if not user_data:
+                user_data = {}
+                return user_data
+            user_data = dict(user_data)
+            user_data['created_at'] = user_data['created_at'].strftime("%Y-%m-%d %H:%M:%S.%f")
+            return user_data
+        except Exception as e:
+            remark = f'Database Crud Error, reason: {e}'
+            self.logger.error(str(e))
+            raise Exception(remark)
+        
+    async def get_user_by_user_email(self, email: str, username:str) -> dict[str,any]:
+        try:
+            query = select(self.db_model.Account).where(
+                (or_(self.db_model.Account.c.email == email, self.db_model.Account.c.username == username))
+            )
+            user_data = await self.database.fetch_one(query)
+            if not user_data:
+                user_data = {}
+                return user_data
+            user_data = dict(user_data)
+            user_data['created_at'] = user_data['created_at'].strftime("%Y-%m-%d %H:%M:%S.%f")
+            return user_data
+        except Exception as e:
+            remark = f'Database Crud Error, reason: {e}'
             self.logger.error(str(e))
             raise Exception(remark)
         
