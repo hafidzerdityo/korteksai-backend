@@ -4,7 +4,7 @@ from repositories.postgres.crud import trx_crud
 from utils.custom_exception import DataExist
 
 class TransactionService:
-    def __init__(self, repo, database, logger):
+    def __init__(self, repo: trx_crud.RepositoryTransaction, database, logger):
         self.repo = repo
         self.database = database
         self.logger = logger
@@ -14,7 +14,7 @@ class TransactionService:
             try:
                 account_data = await self.repo.get_user(req_payload.get('username'))
                 if not account_data:
-                    raise DataExist("Username is not exist")
+                    raise DataExist("username is not exist")
                 service_response = await self.repo.update_credit(req_payload)
             except Exception as e:
                 self.logger.error(str(e)) 

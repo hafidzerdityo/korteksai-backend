@@ -66,12 +66,12 @@ async def get_user(decoded_token: dict[str,any] = Depends(auth_utils.get_current
         )
     
 @router.get('/users', tags=["User Management"], status_code=status.HTTP_200_OK, response_model=um_schemas.ResponseUsers)
-async def get_user(decoded_token: dict[str,any] = Depends(auth_utils.get_current_user)) -> um_schemas.ResponseUsers:
+async def get_user(page: int = 1, limit: int = 5, decoded_token: dict[str,any] = Depends(auth_utils.get_current_user)) -> um_schemas.ResponseUsers:
     try:
         logger.info(decoded_token)
         if decoded_token.get('error'):
             raise Exception(decoded_token.get('msg'))
-        data_fetch_success = await user_service.select_users(decoded_token)
+        data_fetch_success = await user_service.select_users(page, limit, decoded_token)
         data_fetch_success = [um_schemas.ResponseUserItem(**i) for i in data_fetch_success]
         return um_schemas.ResponseUsers(
             resp_msg = "Get Data Berhasil",

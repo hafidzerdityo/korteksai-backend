@@ -35,6 +35,8 @@ class RepositoryTransaction:
                 .values(credit=self.db_model.Account.c.credit + req_payload.get('nominal'))
                 .returning(self.db_model.Account.c.credit)
             )
+
+            self.logger.info(account_data)
             return {
                 'credit' : account_data
             }

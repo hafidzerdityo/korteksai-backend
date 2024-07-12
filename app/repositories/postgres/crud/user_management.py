@@ -37,8 +37,8 @@ class RepositoryUser:
     async def get_user_raw(self, username: str):
         try:
             query = f"""
-                SELECT username, nama, role, divisi, jabatan, created_at, is_deleted
-                FROM "user"
+                SELECT *
+                FROM account
                 WHERE username = :username
             """
             user_exist = await self.database.fetch_one(query=query, values={"username": username})
@@ -87,9 +87,10 @@ class RepositoryUser:
             self.logger.error(str(e))
             raise Exception(remark)
         
-    async def select_users(self) -> list[dict]:
+    async def select_users(self, page, limit) -> list[dict]:
         try:
-            query = select(self.db_model.Account)
+            offset_value = (page - 1) * limit
+            query = select(self.db_model.Account).offset(offset_value).limit(limit)
             user_list = await self.database.fetch_all(query)
             user_dicts = []
             for row in user_list:

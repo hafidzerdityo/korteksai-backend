@@ -8,6 +8,7 @@ from repositories.postgres.config import db_config
 from repositories.postgres.config import db_model
 from logs import logger
 from api.schemas import trx_schemas
+from utils import custom_exception
 
 router = APIRouter()
 
@@ -19,7 +20,7 @@ transaction_service = trx_service.init_transaction_user(db_config.database,db_mo
 async def update_credit(request_payload: trx_schemas.RequestTopup, decoded_token: dict[str,any] = Depends(auth_utils.get_current_user)) -> trx_schemas.ResponseTopup:
     try:
         if decoded_token.get('error'):
-            raise Exception(decoded_token.get('msg'))
+            raise custom_exception.FailedToken(decoded_token.get('msg'))
         request_payload_dict = dict(request_payload)
         request_payload_dict["username"] = decoded_token.get("username")
         logger.info(request_payload_dict)
@@ -32,10 +33,12 @@ async def update_credit(request_payload: trx_schemas.RequestTopup, decoded_token
         return trx_schemas.ResponseTopup(
             **response
         ) 
+    except custom_exception.FailedToken as e:
+        return custom_exception.handle_exception(logger, status.HTTP_401_UNAUTHORIZED, str(e))
     except Exception as e:
         logger.error(str(e)) 
         return JSONResponse(
-            status_code= status.HTTP_401_UNAUTHORIZED,
+            status_code= status.HTTP_400_BAD_REQUEST,
             content={"resp_msg": str(e),
                      "resp_data":  None
                      },

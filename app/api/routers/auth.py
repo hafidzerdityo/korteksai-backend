@@ -14,11 +14,15 @@ user_service = auth_services.init_service_auth(db_config.database, db_model, log
 @router.post("/token", tags=["Authentication"], response_model=auth_schemas.ResponseLogin)
 async def login_for_access_token(form_data: auth_utils.OAuth2PasswordRequestForm = Depends()) -> auth_schemas.ResponseLogin:
     try:
+        mask_password = "*REDACTED*"
+        logger.info(f"request: {form_data.username, mask_password} START: login_for_access_token")
         get_token_data = await user_service.get_token(form_data.username, form_data.password)
-        return auth_schemas.ResponseLogin(
+        response = auth_schemas.ResponseLogin(
             resp_msg="Login Berhasil",
             resp_data=get_token_data
         )
+        logger.info(f"response: {mask_password} END: login_for_access_token")
+        return response
     except Exception as e:
         logger.error(str(e))
         return JSONResponse(

@@ -6,9 +6,7 @@ import os
 structlog.configure(
     processors=[
         structlog.stdlib.add_logger_name,
-        structlog.stdlib.add_log_level,
         structlog.stdlib.PositionalArgumentsFormatter(),
-        structlog.processors.TimeStamper(fmt="iso"),
         structlog.processors.JSONRenderer(),
     ],
     logger_factory=structlog.stdlib.LoggerFactory(),

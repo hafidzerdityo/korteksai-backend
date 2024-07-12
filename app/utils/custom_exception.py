@@ -9,3 +9,5 @@ def handle_exception(logger, status_code, error_message):
 
 class DataExist(Exception):
     pass
+class FailedToken(Exception):
+    pass
