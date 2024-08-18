@@ -74,5 +74,5 @@ app.include_router(api.routers.user_management.router,prefix="/api/v1/user_manag
 app.include_router(api.routers.auth.router,prefix="/api/v1/auth")
 app.include_router(api.routers.transaction.router,prefix="/api/v1/trx")
 
-if __name__ == '__main__':
-    uvicorn.run('main:app', host=HOST, port=int(PORT), workers=int(WORKERS), reload=True)
+# if __name__ == '__main__':
+#     uvicorn.run('main:app', host=HOST, port=int(PORT), workers=int(WORKERS), reload=True)

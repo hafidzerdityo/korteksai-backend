@@ -10,4 +10,4 @@ COPY ./app /code/.
 
 
 # CMD ["sh", "-c", "python3 -m unittest discover && python3 main.py"]
-CMD ["python3","main.py"]
+# CMD ["python3","main.py"]
