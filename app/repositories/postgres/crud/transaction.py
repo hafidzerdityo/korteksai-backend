@@ -1,12 +1,13 @@
 import utils.crud as crud_utils
 import utils.auth as auth_utils
 from sqlalchemy import select, insert, update
+from databases import Database
 
 
 class RepositoryTransaction:
     def __init__(self, database, db_model, logger):
         self.db_model = db_model
-        self.database = database
+        self.database: Database = database
         self.logger = logger
 
     async def get_user(self, username: str) -> dict[str,any]:

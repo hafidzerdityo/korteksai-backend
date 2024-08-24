@@ -18,6 +18,8 @@ A really simple backend template built with FastAPI, designed to jumpstart your 
 
 - **Dockerized**: Simplify deployment with Docker and Docker Compose. Run `docker-compose up`, and your entire application stack is up and running.
 
+**New Feature**: Nginx Load Balancer
+
 ## Getting Started
 
 1. Clone this repository.

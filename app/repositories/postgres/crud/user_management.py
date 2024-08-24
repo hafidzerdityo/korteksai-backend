@@ -1,12 +1,12 @@
 import utils.crud as crud_utils
 import utils.auth as auth_utils
 from sqlalchemy import select, insert, or_
-
+from databases import Database
 
 class RepositoryUser:
     def __init__(self, database, db_model, logger):
         self.db_model = db_model
-        self.database = database
+        self.database: Database = database
         self.logger = logger
 
     async def create_user(self, req_payload:dict[str,any]) -> dict[str,any]:

@@ -15,7 +15,6 @@ router = APIRouter()
 transaction_service = trx_service.init_transaction_user(db_config.database,db_model,logger)
 
 
-
 @router.post('/topup', tags=["Transaction"], status_code=status.HTTP_201_CREATED, response_model=trx_schemas.ResponseTopup)
 async def update_credit(request_payload: trx_schemas.RequestTopup, decoded_token: dict[str,any] = Depends(auth_utils.get_current_user)) -> trx_schemas.ResponseTopup:
     try:
